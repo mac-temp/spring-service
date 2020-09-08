@@ -1,0 +1,128 @@
+openapi: 3.0.0
+info:
+  description: "This is a sample service allowing manipulation of offers"
+  version: "1.0.0"
+  title: "Offer service"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+paths:
+  /api/offers:
+    post:
+      tags:
+        - "offer"
+      summary: "Add a new offer"
+      operationId: "addOffer"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOfferCommand'
+      responses:
+        "201":
+          description: "Offer was successfully created"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Offer'
+        "400":
+          description: "Bad request - offer request payload is invalid"
+        "409":
+          description: "Conflict - offer already exists"
+    get:
+      tags:
+        - "offer"
+      summary: "Get a list of offers"
+      operationId: "getAllOffers"
+      responses:
+        "200":
+          description: "List of offers"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Offer'
+  /api/offers/{offerId}:
+    get:
+      parameters:
+        - in: path
+          name: offerId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Numeric ID of the offer to get
+      tags:
+        - "offer"
+      responses:
+        "200":
+          description: "Offer was successfully retrieved"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Offer'
+        "404":
+          description: "Offer could not be found"
+  /api/offers/{offerId}/expire:
+    put:
+      parameters:
+        - in: path
+          name: offerId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Numeric ID of the offer to get
+      description: Expire
+      tags:
+        - "offer"
+      responses:
+        "200":
+          description: "Offer was successfully retrieved"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Offer'
+components:
+  schemas:
+    CreateOfferCommand:
+      type: object
+      properties:
+        name:
+          type: string
+        price:
+          type: number
+          format: double
+          example: 0.99
+        description:
+          type: string
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+    Offer:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        price:
+          type: number
+          format: double
+          example: 0.99
+        description:
+          type: string
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        isActive:
+          type: boolean
